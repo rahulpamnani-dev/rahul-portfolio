@@ -167,4 +167,10 @@ app.post('/api/contact', async (req, res) => {
   res.json({ success: true, message: 'Message received! Rahul will get back to you shortly.' });
 });
 
-app.listen(PORT, () => console.log(`Portfolio API running on http://localhost:${PORT}`));
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Portfolio API running on http://localhost:${PORT}`));
+}
+
+// Export for Vercel
+module.exports = app;
