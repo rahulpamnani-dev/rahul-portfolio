@@ -16,13 +16,18 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // Allow all origins for now to debug Vercel issue
     }
   }
 }));
 app.use(express.json());
 
-// Portfolio data
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Routes
 const portfolioData = {
   personal: {
     name: 'Rahul Pamnani',
@@ -171,6 +176,12 @@ app.post('/api/contact', async (req, res) => {
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => console.log(`Portfolio API running on http://localhost:${PORT}`));
 }
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ success: false, message: 'Internal Server Error', error: process.env.NODE_ENV === 'production' ? {} : err.message });
+});
 
 // Export for Vercel
 module.exports = app;
